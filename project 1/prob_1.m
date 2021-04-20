@@ -1,4 +1,5 @@
 %% Constants
+clear
 m = 10000;
 dt = 0.01;
 alpha = 0.6;
@@ -53,12 +54,6 @@ for i=1:m
     
     X_hist(:,i) = [X(1);X(4)];
 end
-%%
+%% PLot trajectory
 plot(X_hist(1,:),X_hist(2,:))
-    
-    
-    
-    
-    
-    
-    
+
