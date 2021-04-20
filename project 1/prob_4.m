@@ -8,6 +8,8 @@ sigma = 0.5;
 v = 90;
 eta = 3;
 zeta = 1.5;
+resamplerate = 10;
+
 
 P = [
 16 1 1 1 1;
@@ -64,6 +66,8 @@ weights(:,1) =weights(:,1)/mw;
 %%
 driver = round(rand()*4)+1;  %Z0 index
 
+
+count = 0;
 for time=2:m
     for part= 1:N        
         W = randn(2,1).*sigma; %Wn+1
@@ -80,6 +84,12 @@ for time=2:m
         mw = max(weights(:,time));
         weights(:,time) =weights(:,time)/mw;
     end
+    if count >= resamplerate
+        count=0;
+        weights(:,time) = randsample(N,N,true, weights(:,time));
+    else
+        count = count+1;
+    end
 end
 
 tau_1 = zeros(1,m);
@@ -87,14 +97,14 @@ tau_2 = zeros(1,m);
 
 for time = 1:m
     big_omega = sum(weights(:,time));
-   
+
     tau_1(time) = sum(weights(:,time).*X(1,:,time)')/big_omega; 
     tau_2(time) = sum(weights(:,time).*X(4,:,time)')/big_omega;
 end
 
-% hold on
-% plot([1:1:501],tau_1)
-% plot([1:1:501],tau_2)
-% hold off
-%%
-plot(tau_1,tau_2)
+hold on
+plot([1:1:501],tau_1)
+plot([1:1:501],tau_2)
+hold off
+% %%
+% plot(tau_1,tau_2)
