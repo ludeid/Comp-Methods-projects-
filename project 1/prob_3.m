@@ -56,6 +56,7 @@ for part=1:N
         mu(i) = v -10*eta*log10(norm( [X(1,part,1); X(4,part,1)] - pos_vec(:,i)));
     end
     weights(part,1) = weights(part,1)*mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2));
+    weights(part,1) = weights(part,1)/( mvnpdf(X(:,part,1), zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5]));
 end
 
 mw = max(weights(:,1));
@@ -70,7 +71,13 @@ for time=2:m
         X(:,part,time) = phi*X(:,part,time-1) + psi_z*Z(:,driver) + W;
         %Driver n+1
         driver = randsample(5,1,true,P(:,driver));
-
+        
+        %weights
+        for i=1:6
+            mu(i) = v -10*eta*log10(norm( [X(1,part,1); X(4,part,1)] - pos_vec(:,i)));
+        end
+        weights(part,1) = weights(part,1)*mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2));
+        
         
     end
 end
