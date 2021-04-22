@@ -65,7 +65,7 @@ end
 mw = max(weights(:,1));
 weights(:,1) =weights(:,1)/mw;
 %%
-driver = round(rand()*4)+1;  %Z0 index
+driver = randsample(5,N, true);  %Z0 index
 
 idx = 1;
 count = 0;
@@ -74,19 +74,18 @@ for time=2:m
     for part= 1:N        
         W = randn(2,1).*sigma; %Wn+1
         W = psi_w*W;
-        X(:,part,time) = phi*X(:,part,time-1) + psi_z*Z(:,driver) + W;
+        X(:,part,time) = phi*X(:,part,time-1) + psi_z*Z(:,driver(time)) + W;
         %Driver n+1
-        driver = randsample(5,1,true,P(:,driver));
+        driver(time) = randsample(5,1,true,P(:,driver(time)));
         
         %weights
         for i=1:6
             mu(i) = v -10*eta*log10(norm( [X(1,part,time); X(4,part,time)] - pos_vec(:,i)));
         end
         weights(part,time) = weights(part,time-1)*mvnpdf(Y(:,time), mu, diag(ones(6,1)*zeta^2));
-        mw = max(weights(:,time));
-        weights(:,time) =weights(:,time)/mw;
     end
-    
+    mw = max(weights(:,time));
+    weights(:,time) =weights(:,time)/mw;
     
     if time == eff_vec(idx)
         big_omega = sum(weights(:,time));
@@ -117,17 +116,25 @@ for time = 1:m
 end
 
 %% Create semilog histograms
-
+count = 1;
 for i =[1 5 10]
-    figure(i)
+    figure(count)
+    count = count + 1;
     [~,edges] = histcounts(log10(weights(:,i)));
     histogram(weights(:,i),10.^edges)
     set(gca, 'xscale','log')
 end
-
-% hold on
-% plot([1:1:501],tau_1)
-% plot([1:1:501],tau_2)
-% hold off
+figure(count)
+hold on
+plot([1:1:501],tau_1)
+plot([1:1:501],tau_2)
+hold off
 %% PLOT average path
+figure(count+1)
+hold on
 plot(tau_1,tau_2)
+plot(pos_vec(1,:),pos_vec(2,:),'*')
+hold off
+%%
+figure(count +2)
+plot(eff_vec, ess)

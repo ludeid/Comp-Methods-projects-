@@ -117,15 +117,22 @@ for time = 1:m
 end
 
 %% Create semilog histograms
-
-% hold on
-% plot([1:1:501],tau_1)
-% plot([1:1:501],tau_2)
-% hold off
+count = 1;
+for i =[1 5 10]
+    figure(count)
+    count =1
+    [~,edges] = histcounts(log10(weights(:,i)));
+    histogram(weights(:,i),10.^edges)
+    set(gca, 'xscale','log')
+end
+hold on
+plot([1:1:501],tau_1)
+plot([1:1:501],tau_2)
+hold off
 %% PLOT average path
+hold on
 plot(tau_1,tau_2)
+
+hold off
 %%
-
-
-hist(weights(:,2), 30)
-set(gca
+plot(ess)
