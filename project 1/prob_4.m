@@ -1,7 +1,7 @@
 %% Constants
 clear
 m = 501;
-N = 10^4;
+N = 10^3;
 dt = 0.5;
 alpha = 0.6;
 sigma = 0.5;

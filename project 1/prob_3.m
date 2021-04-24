@@ -43,6 +43,8 @@ psi_w = [dt^2/2 0;
 Z = [
     0 3.5 0 0 -3.5;
     0 0 3.5 -3.5 0];
+diagg = [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5];
+
 
 stations = matfile('stations.mat');
 pos_vec = stations.pos_vec;
@@ -50,16 +52,16 @@ RSSI_obj = matfile('RSSI-measurements.mat');
 Y = RSSI_obj.Y;
 %%
 X = zeros(6,N,m);
-X(:,:,1) = mvnrnd(zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5], N)'; %X0
+X(:,:,1) = mvnrnd(zeros(6,1), diagg, N)'; %X0
 weights = zeros(N,m); %weight0
 for part=1:N
-    weights(part,1) = mvnpdf(X(:,part,1),zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5]);  %xhi(0)*p0
+    weights(part,1) = mvnpdf(X(:,part,1),zeros(6,1), diagg);  %xhi(0)*p0
     mu = zeros(6,1);
     for i=1:6
         mu(i) = v -10*eta*log10(norm( [X(1,part,1); X(4,part,1)] - pos_vec(:,i)));
     end
     weights(part,1) = weights(part,1)*mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2));
-    weights(part,1) = weights(part,1)/( mvnpdf(X(:,part,1), zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5]));
+    weights(part,1) = weights(part,1)/( mvnpdf(X(:,part,1), zeros(6,1), diagg));
 end
 
 mw = max(weights(:,1));
@@ -138,3 +140,5 @@ hold off
 %%
 figure(count +2)
 plot(eff_vec, ess)
+
+function normed_vec = myNorm(

@@ -43,6 +43,8 @@ psi_w = [dt^2/2 0;
 Z = [
     0 3.5 0 0 -3.5;
     0 0 3.5 -3.5 0];
+diagg = [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5];
+
 
 stations = matfile('stations.mat');
 pos_vec = stations.pos_vec;
@@ -50,43 +52,38 @@ RSSI_obj = matfile('RSSI-measurements.mat');
 Y = RSSI_obj.Y;
 %%
 X = zeros(6,N,m);
-X(:,:,1) = mvnrnd(zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5], N)'; %X0
+X(:,:,1) = mvnrnd(zeros(6,1), diagg, N)'; %X0
 weights = zeros(N,m); %weight0
-for part=1:N
-    weights(part,1) = mvnpdf(X(:,part,1),zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5]);  %xhi(0)*p0
-    mu = zeros(6,1);
-    for i=1:6
-        mu(i) = v -10*eta*log10(norm( [X(1,part,1); X(4,part,1)] - pos_vec(:,i)));
-    end
-    weights(part,1) = weights(part,1)*mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2));
-    weights(part,1) = weights(part,1)/( mvnpdf(X(:,part,1), zeros(6,1), [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0 0 5]));
-end
 
+%% Vectorized. Do not need chi(X_0) since g_0=xhi_0, z_0=xhi_0*p_0 --> z_0=p(X_0,Y_0)
+mu = zeros(6,N);
+for station=1:6
+    mu(station,:) = v -10*eta*log10(vecnorm( [X(1,:,1); X(4,:,1)] - pos_vec(:,station),2,1));
+end
+%weights(:,1) = cellfun(@mvnpdf,num2cell(X(:,:,1),1),
+%repmat(num2cell(zeros(6,1),[1 2]),1,N), repmat(num2cell(diagg,[1
+%2]),1,N));  = chi(X_0)
+zeta_matrices = repmat(num2cell(diag(ones(6,1)*zeta^2),[1 2]),1,N);
+weights(:,1) = cellfun(@mvnpdf,num2cell(repmat(Y(:,1),1,N),1), num2cell(mu,1) , zeta_matrices); %mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2)) (for each particle where mu=mu(part))
 mw = max(weights(:,1));
 weights(:,1) =weights(:,1)/mw;
 %%
-driver = round(rand()*4)+1;  %Z0 index
+driver = randsample(5,N, true);  %Z0 index
 
 idx = 1;
 count = 0;
 countrate = round(N/10);
 for time=2:m
-    for part= 1:N        
-        W = randn(2,1).*sigma; %Wn+1
-        W = psi_w*W;
-        X(:,part,time) = phi*X(:,part,time-1) + psi_z*Z(:,driver) + W;
-        %Driver n+1
-        driver = randsample(5,1,true,P(:,driver));
-        
-        %weights
-        for i=1:6
-            mu(i) = v -10*eta*log10(norm( [X(1,part,time); X(4,part,time)] - pos_vec(:,i)));
-        end
-        weights(part,time) = weights(part,time-1)*mvnpdf(Y(:,time), mu, diag(ones(6,1)*zeta^2));
-        mw = max(weights(:,time));
-        weights(:,time) =weights(:,time)/mw;
-    end
+    W = psi_w*randn(2,N)*sigma; %Wn+1 N times
+    X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver) + W;    
+    driver = cellfun(@randsample,num2cell(ones(1,N)*5,1),num2cell(ones(1,N),1),num2cell(true(1,N)),num2cell(P(:,driver),1)); %driver n+1
     
+    for station=1:6
+        mu(station,:) = v -10*eta*log10(vecnorm( [X(1,:,time); X(4,:,time)] - pos_vec(:,station),2,1));
+    end
+    weights(:,time) = weights(:,time-1).*cellfun(@mvnpdf,num2cell(repmat(Y(:,time),1,N),1), num2cell(mu,1) ,zeta_matrices)'; %mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2)) (for each particle where mu=mu(part))
+    mw = max(weights(:,time));
+    weights(:,time) =weights(:,time)/mw;
     
     if time == eff_vec(idx)
         big_omega = sum(weights(:,time));
@@ -118,21 +115,24 @@ end
 
 %% Create semilog histograms
 count = 1;
-for i =[1 5 10]
+for i =[1 5 10 400]
     figure(count)
-    count =1
+    count = count + 1;
     [~,edges] = histcounts(log10(weights(:,i)));
     histogram(weights(:,i),10.^edges)
     set(gca, 'xscale','log')
 end
+figure(count)
 hold on
 plot([1:1:501],tau_1)
 plot([1:1:501],tau_2)
 hold off
 %% PLOT average path
+figure(count+1)
 hold on
 plot(tau_1,tau_2)
-
+plot(pos_vec(1,:),pos_vec(2,:),'*')
 hold off
 %%
-plot(ess)
+figure(count +2)
+plot(eff_vec, ess)
