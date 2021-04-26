@@ -180,6 +180,6 @@ max_driver = zeros(1,m);
 for time = 1:m
     max_driver(time) = max(driver_hist(:,time));
 end
-plot(max_driver)
-driver_hist
+%plot(max_driver)
+%driver_hist
 end
