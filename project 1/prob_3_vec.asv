@@ -1,7 +1,7 @@
 %% Constants
 clear
 m = 501;
-N = 10^2;
+N = 10^3;
 dt = 0.5;
 alpha = 0.6;
 sigma = 0.5;
@@ -50,8 +50,9 @@ stations = matfile('stations.mat');
 pos_vec = stations.pos_vec;
 RSSI_obj = matfile('RSSI-measurements.mat');
 Y = RSSI_obj.Y;
-%% Self 
-[X_true, Y] = generate_data();
+
+%% Self generated path
+Y = 
 %%
 X = zeros(6,N,m);
 X(:,:,1) = mvnrnd(zeros(6,1), diagg, N)'; %X0
@@ -74,7 +75,7 @@ driver = randsample(5,N, true);  %Z0 index
 
 idx = 1;
 count = 0;
-countrate = round(m/10);
+countrate = round(N/10);
 for time=2:m
     W = psi_w*randn(2,N)*sigma; %Wn+1 N times
     X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver) + W;    
@@ -117,7 +118,7 @@ end
 
 %% Create semilog histograms
 count = 1;
-for i =[1 5 100 400]
+for i =[1 5 10 400]
     figure(count)
     count = count + 1;
     [~,edges] = histcounts(log10(weights(:,i)));
@@ -134,10 +135,6 @@ figure(count+1)
 hold on
 plot(tau_1,tau_2)
 plot(pos_vec(1,:),pos_vec(2,:),'*')
-%%
-plot(X_true(1,:), X_true(4,:))
-%%
-legend('Approx','Stations', 'True');
 hold off
 %%
 figure(count +2)

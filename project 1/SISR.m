@@ -1,14 +1,11 @@
+function [weights, X] = SISR(zeta, N, m)
 %% Constants
-close all
-clear
-m = 501;
-N = 10^2;
 dt = 0.5;
 alpha = 0.6;
 sigma = 0.5;
 v = 90;
 eta = 3;
-zeta = 1.5;
+%zeta = 1.5;
 eff_vec = [2 5 10 round(m/10) round(3*m/10) round(m/2) round(8*m/10) m];
 CV = zeros(length(eff_vec), 1);
 ess = zeros(length(eff_vec), 1);
@@ -54,8 +51,6 @@ stations = matfile('stations.mat');
 pos_vec = stations.pos_vec;
 RSSI_obj = matfile('RSSI-measurements.mat');
 Y = RSSI_obj.Y;
-%%
-%[X_true, Y] = generate_data();
 
 %% Generate X_0,w_0
 zeta_matrices = repmat(num2cell(diag(ones(6,1)*zeta^2),[1 2]),1,N);
@@ -135,52 +130,10 @@ for time=2:m
     end
     
     if count >= countrate
-        disp(time);
+        disp(['Time= ' num2str(time)]);
         count = 0;
     else
         count = count+1;
     end
 end
-
-tau_1 = zeros(1,m);
-tau_2 = zeros(1,m);
-
-for time = 1:m
-    big_omega = sum(weights(:,time));
-   
-    tau_1(time) = sum(weights(:,time).*X(1,:,time)')/big_omega; 
-    tau_2(time) = sum(weights(:,time).*X(4,:,time)')/big_omega;
 end
-
-%% Create semilog histograms
-count = 1;
-for i =[1 5 10 400]
-    figure(count)
-    count = count + 1;
-    [~,edges] = histcounts(log10(weights(:,i)));
-    histogram(weights(:,i), 10.^edges)
-    set(gca, 'xscale', 'log')
-    title(['Time =' num2str(i)])
-end
-
-%figure(count)
-% hold on
-% plot([1:1:501],tau_1)
-% plot([1:1:501],tau_2)
-% hold off
-%% PLOT average path
-figure(count+1)
-hold on
-plot(tau_1,tau_2)
-plot(pos_vec(1,:),pos_vec(2,:),'*')
-title('Estimated path')
-%%
-%plot(X_true(1,:), X_true(4,:))
-%legend('Approx','Stations', 'True');
-
-%%
-hold off
-%% Effective sample size
-figure(count +2)
-plot(eff_vec, ess)
-title('ESS')
