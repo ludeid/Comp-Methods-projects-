@@ -1,5 +1,6 @@
-function prob_1(m)
 %% Constants
+clear
+m = 10000;
 dt = 0.01;
 alpha = 0.6;
 sigma = 0.5;
@@ -56,4 +57,3 @@ end
 %% PLot trajectory
 plot(X_hist(1,:),X_hist(2,:))
 
-end
