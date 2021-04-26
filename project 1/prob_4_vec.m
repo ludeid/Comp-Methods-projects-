@@ -135,7 +135,7 @@ for time=2:m
     end
     
     if count >= countrate
-        disp(time);
+        disp(['Time = ' num2str(time) ' out of ' num2str(m)]);
         count = 0;
     else
         count = count+1;

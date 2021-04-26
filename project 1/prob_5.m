@@ -1,4 +1,5 @@
-N = 5*10^2;
+clear
+N = 10^3;
 m = 501;
 
 D = 3;
@@ -36,5 +37,5 @@ pos_vec = stations.pos_vec;
 hold on
 plot(tau_1,tau_2)
 plot(pos_vec(1,:),pos_vec(2,:),'*')
-title('Estimated path for zeta=' num2str(zeta_vec(m_idx)))
+title(['Estimated path for zeta= ' num2str(zeta_vec(m_idx))])
 hold off
