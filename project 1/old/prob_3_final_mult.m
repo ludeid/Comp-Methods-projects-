@@ -69,7 +69,6 @@ zeta_matrices = repmat(num2cell(diag(ones(6,1)*zeta^2),[1 2]),1,N);
 weights(:,1) = cellfun(@mvnpdf,num2cell(repmat(Y(:,1),1,N),1), num2cell(mu,1) , zeta_matrices); %mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2)) (for each particle where mu=mu(part))
 mw = max(weights(:,1));
 weights(:,1) =weights(:,1)/mw;
-weights(:,1) = log(weights(:,1));
 %%
 driver = randsample(5,N, true);  %Z0 index
 
@@ -84,20 +83,14 @@ for time=2:m
     for station=1:6
         mu(station,:) = v -10*eta*log10(vecnorm( [X(1,:,time); X(4,:,time)] - pos_vec(:,station),2,1));
     end
-    weights(:,time) = weights(:,time-1)+ log(cellfun(@mvnpdf,num2cell(repmat(Y(:,time),1,N),1), num2cell(mu,1) ,zeta_matrices)'); %mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2)) (for each particle where mu=mu(part))
-    %mw = max(weights(:,time));
-    %weights(:,time) =weights(:,time)/mw; %
+    weights(:,time) = weights(:,time-1).*cellfun(@mvnpdf,num2cell(repmat(Y(:,time),1,N),1), num2cell(mu,1) ,zeta_matrices)'; %mvnpdf(Y(:,1), mu, diag(ones(6,1)*zeta^2)) (for each particle where mu=mu(part))
+    mw = max(weights(:,time));
+    weights(:,time) =weights(:,time)/mw;
     
     if time == eff_vec(idx)
-        temp_weights = weights(:,time);
-        L = max(temp_weights);
-        temp_weights = exp(temp_weights-L);
-        temp_weights = temp_weights/sum(temp_weights);
-        
-        
-        big_omega = sum(temp_weights);
+        big_omega = sum(weights(:,time));
 
-        CV(idx) = sqrt(N)*norm(temp_weights./big_omega - 1/N);
+        CV(idx) = sqrt(N)*norm(weights(:,time)./big_omega - 1/N);
         %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
         ess(idx) = N/(1+CV(idx)^2);
         
@@ -116,12 +109,6 @@ tau_1 = zeros(1,m);
 tau_2 = zeros(1,m);
 
 for time = 1:m
-    temp_weights = weights(:,time);
-    L = max(temp_weights);
-    temp_weights = exp(temp_weights-L);
-    temp_weights = temp_weights/sum(temp_weights);
-    weights(:,time)= temp_weights;
-    
     big_omega = sum(weights(:,time));
    
     tau_1(time) = sum(weights(:,time).*X(1,:,time)')/big_omega; 

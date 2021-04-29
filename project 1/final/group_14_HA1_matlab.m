@@ -9,7 +9,7 @@ prob_1(m)  %Simulating trajectory with m timesteps
 
 
 %% Problem 3
-N = 10^2; %number of particles
+N = 10^4; %number of particles
 m = 501; 
 generated_data = false; %true if one want to check correctedness of algorithm against data personally generated 
 eff_vec = 1:1:m; % times at which we compute Efficient sample size
