@@ -1,4 +1,4 @@
-function [tau_1, tau_2] = prob_3(N, generated_data, hist_vec)
+function [tau_1, tau_2] = prob_3(N, generated_data, eff_vec, hist_vec)
 %% Constants
 m = 501;
 dt = 0.5;
@@ -7,8 +7,8 @@ sigma = 0.5;
 v = 90;
 eta = 3;
 zeta = 1.5;
-CV = zeros(m, 1);
-ess = zeros(m, 1);
+CV = zeros(length(eff_vec), 1);
+ess = zeros(length(eff_vec), 1);
 
 P = [
 16 1 1 1 1;
@@ -76,6 +76,7 @@ driver_hist= zeros(N,501);
 driver_hist(:,1)= driver;
 
 
+idx = 1;
 count = 0;
 countrate = round(m/10);
 for time=2:m
@@ -91,15 +92,22 @@ for time=2:m
     %mw = max(weights(:,time));
     %weights(:,time) =weights(:,time)/mw; %
     
-    temp_weights = weights(:,time);
-    L = max(temp_weights);
-    temp_weights = exp(temp_weights-L);
-    temp_weights = temp_weights/sum(temp_weights);
+    if time == eff_vec(idx)
+        temp_weights = weights(:,time);
+        L = max(temp_weights);
+        temp_weights = exp(temp_weights-L);
+        temp_weights = temp_weights/sum(temp_weights);
+        
+        big_omega = sum(temp_weights);
 
-    big_omega = sum(temp_weights);
-
-    CV(time) = sqrt(N*sum((temp_weights/sum(temp_weights)-(1/N)).^2));
-    ess(time) = N/(1+CV(time)^2);
+        CV(idx) = sqrt(N*sum((weights(:,idx)/sum(weights(:,idx))-(1/N)).^2));
+        %ess(idx) = N/(1+CV(idx)^2);
+        ess(idx) = sum((temp_weights./big_omega).^2)^(-1);
+        idx = idx +1;
+        
+        %coeff_of_var(idx) = sqrt(N*sum((weights(:,idx)/sum(weights(:,idx))-(1/N)).^2));
+        %eff_sample_size(idx) = N/(1+coeff_of_var(idx)^2);
+    end
     
     if count >= countrate
         disp(['Time = ' num2str(time) ' out of ' num2str(m)]);
@@ -150,7 +158,24 @@ legend('Approx','Stations', 'True');
 hold off
 %%
 figure(count +2)
-plot(ess)
+plot(eff_vec, ess)
 title('ESS')
 
+%%
+comm = zeros(5,m);
+for time = 1:m
+    for part = 1:N
+        comm(driver_hist(part, time),time) = comm(driver_hist(part, time),time) + weights(part, time);
+    end
+end
+
+prob_comm = zeros(1,m);
+for time = 1:m
+    [val, I]= max(comm(:,time));
+    prob_comm(time) = val;
+end
+figure(count +3)
+plot(prob_comm)
+title('Most probable driving command')
+temp = comm;
 end

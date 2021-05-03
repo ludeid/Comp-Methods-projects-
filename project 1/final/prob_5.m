@@ -13,8 +13,8 @@ for idx=1:D
     disp(['D= ' num2str(idx)])
     [temp, weights] = SISR(zeta_vec(idx),N, m);
     for time=1:m
-        summed = log(cumsum(sum(weights(:,:),1).^(1/time)));
-        l(idx,time) = (-time-1)/time*log(N) + sum(summed(1:time));
+        logOmegas = log(sum(weights(:,:),1));
+        l(idx,time) = (-time-1)*log(N)/time + sum(logOmegas(1:time))/time;
     end
 end
 %%

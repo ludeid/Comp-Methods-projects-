@@ -74,9 +74,6 @@ weights(:,1) =weights(:,1)/mw;
 %%
 driver_hist = zeros(5,m);
 driver = randsample(5,N, true);  %Z0 index
-driver_hist2= zeros(N,501);
-driver_hist2(:,1)= driver;
-
 driver_plot = zeros(m,1);
 driver_plot(1) = mode(driver);
 [temp1, temp2, driver_hist(:,1)]= groupcounts(driver);
@@ -95,7 +92,6 @@ for time=2:m
         W = psi_w*randn(2,N)*sigma; %Wn+1 N times
         X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver) + W;    
         driver = cellfun(@randsample,num2cell(ones(1,N)*5,1),num2cell(ones(1,N),1),num2cell(true(1,N)),num2cell(P(:,driver),1)); %driver n+1
-        driver_hist2(:,time)= driver;
 
         for station=1:6
             mu(station,:) = v -10*eta*log10(vecnorm( [X(1,:,time); X(4,:,time)] - pos_vec(:,station),2,1));
@@ -110,7 +106,6 @@ for time=2:m
         W = psi_w*randn(2,N)*sigma; %Wn+1 N times
         X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver) + W;    
         driver = cellfun(@randsample,num2cell(ones(1,N)*5,1),num2cell(ones(1,N),1),num2cell(true(1,N)),num2cell(P(:,driver),1)); %driver n+1
-        driver_hist2(:,time)= driver;
 
         for station=1:6
             mu(station,:) = v -10*eta*log10(vecnorm( [X(1,:,time); X(4,:,time)] - pos_vec(:,station),2,1));
@@ -189,22 +184,12 @@ end
 %driver_hist
 
 %%
-comm = zeros(5,m);
-for time = 1:m
-    for part = 1:N
-        comm(driver_hist2(part, time),time) = comm(driver_hist2(part, time),time) + weights(part, time);
-    end
-    comm(:,time)=comm(:,time)/sum(comm(:,time));
-end
-
-
 prob_comm = zeros(1,m);
 for time = 1:m
     [val, I]= max(comm(:,time));
     prob_comm(time) = val;
 end
 figure(count +3)
-area(1:1:m,comm')
-
+plot(prob_comm)
 title('Most probable driving command')
 end
