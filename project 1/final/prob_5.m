@@ -1,9 +1,12 @@
-clear
-N = 10^3;
+function prob_5(N,D, zeta_vec)
 m = 501;
 
-zeta_vec = linspace(0,3,D+2);
-zeta_vec = zeta_vec(2:D+1);
+if isempty(zeta_vec)
+    zeta_vec = linspace(0,3,D+2);
+    zeta_vec = zeta_vec(2:D+1);
+else
+    D = length(zeta_vec);
+end
 
 l = zeros(D,m);
 for idx=1:D
@@ -38,3 +41,5 @@ plot(tau_1,tau_2)
 plot(pos_vec(1,:),pos_vec(2,:),'*')
 title(['Estimated path for zeta= ' num2str(zeta_vec(m_idx))])
 hold off
+end
+
