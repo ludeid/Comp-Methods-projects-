@@ -93,13 +93,12 @@ for time=2:m
         L = max(temp_weights);
         temp_weights = exp(temp_weights-L);
         temp_weights = temp_weights/sum(temp_weights);
-        x
+        
         big_omega = sum(temp_weights);
 
         CV(idx) = sqrt(N)*norm(temp_weights./big_omega - 1/N);
-        %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
-        ess(idx) = N/(1+CV(idx)^2);
-        
+        %ess(idx) = N/(1+CV(idx)^2);
+        ess(idx) = sum((temp_weights./big_omega).^2)^(-1);
         idx = idx +1;
     end
     
