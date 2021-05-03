@@ -2,7 +2,7 @@ function prob_5(N,D, zeta_vec)
 m = 501;
 
 if isempty(zeta_vec)
-    zeta_vec = linspace(0,3,D+2);
+    zeta_vec = linspace(0.4,3,D+2);
     zeta_vec = zeta_vec(2:D+1);
 else
     D = length(zeta_vec);

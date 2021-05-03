@@ -33,11 +33,11 @@ D = 0;
 %points or specified zeta_vec. If zeta_vec is passed as an empty array then
 %D-mesh will be used.
 
-zeta_vec = [0.5 0.6 2.2 2.3];
+%zeta_vec = [0.5 0.6 2.2 2.3];
 
 %or
 
-%D = 20;    %number of points in mesh evenly spaced inside (0,3). D = 3 yields mesh [0.75    1.50    2.25]
-%zeta_vec = [];
+D = 10;    %number of points in mesh evenly spaced inside (0,3). D = 3 yields mesh [0.75    1.50    2.25]
+zeta_vec = [];
 
 prob_5(N,D, zeta_vec)
