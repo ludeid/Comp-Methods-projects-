@@ -119,15 +119,15 @@ for time=2:m
 
     
     
-    if time == eff_vec(idx)
-        big_omega = sum(weights(:,time));
-
-        CV(idx) = sqrt(N)*norm(weights(:,time)./big_omega - 1/N);
-        %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
-        ess(idx) = N/(1+CV(idx)^2);
-        
-        idx = idx +1;
-    end
+%     if time == eff_vec(idx)
+%         big_omega = sum(weights(:,time));
+% 
+%         CV(idx) = sqrt(N)*norm(weights(:,time)./big_omega - 1/N);
+%         %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
+%         ess(idx) = N/(1+CV(idx)^2);
+%         
+%         idx = idx +1;
+%     end
     
     if count >= countrate
         disp(['Time= ' num2str(time)]);
