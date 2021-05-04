@@ -27,17 +27,17 @@ prob_4(N,generated_data, plot_histograms)
 
 
 %% Problem 5
-N = 10^4; %%number of particles in each run of zeta
+N = 10^3; %%number of particles in each run of zeta
 D = 0;
 %choose to either run algotirhm with zeta over a evenly spaced mesh with D
 %points or specified zeta_vec. If zeta_vec is passed as an empty array then
 %D-mesh will be used.
 
-zeta_vec = [1.35 1.4 1.45 2.25 2.3 2.35];
+%zeta_vec = [1.35 1.4 1.45 2.25 2.3 2.35];
 
 %or
 
-%D = 10;    %number of points in mesh evenly spaced inside (0,3). D = 3 yields mesh [0.75    1.50    2.25]
-%zeta_vec = [];
+D = 1;    %number of points in mesh evenly spaced inside (0,3). D = 3 yields mesh [0.75    1.50    2.25]
+zeta_vec = [];
 
 prob_5(N,D, zeta_vec)

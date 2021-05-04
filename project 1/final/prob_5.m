@@ -12,13 +12,12 @@ l = zeros(D,m);
 for idx=1:D
     disp(['D= ' num2str(idx)])
     [temp, weights] = SISR(zeta_vec(idx),N, m);
-    for time=1:m
-        logOmegas = log(sum(weights(:,:),1));
-        l(idx,time) = (-time-1)*log(N)/time + sum(logOmegas(1:time))/time;
-    end
+    
+    logOmegas = log(sum(weights(:,:),1));
+    l(idx,m) = (-m-1)*log(N)/m + sum(logOmegas(1:m))/m;
 end
 %%
-[m_val, m_idx] = max(l(:,500));
+[m_val, m_idx] = max(l(:,m));
 
 disp(['Running for maximized zeta=' num2str(zeta_vec(m_idx))])
 [weights, X] = SISR(zeta_vec(m_idx), N,m);

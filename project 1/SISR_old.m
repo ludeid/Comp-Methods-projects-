@@ -1,13 +1,12 @@
-function prob_4(N,generated_data, plot_histograms)
+function [weights, X] = SISR(zeta, N, m)
 %% Constants
-m = 501;
 dt = 0.5;
 alpha = 0.6;
 sigma = 0.5;
 v = 90;
 eta = 3;
-zeta = 1.5;
-eff_vec = 1:1:m; % times at which we compute Efficient sample size
+%zeta = 1.5;
+eff_vec = [2 5 10 round(m/10) round(3*m/10) round(m/2) round(8*m/10) m];
 CV = zeros(length(eff_vec), 1);
 ess = zeros(length(eff_vec), 1);
 resamplerate = 1;
@@ -50,12 +49,9 @@ diagg = [500 0 0 0 0 0;0 5 0 0 0 0;0 0 5 0 0 0;0 0 0 200 0 0;0 0 0 0 5 0;0 0 0 0
 
 stations = matfile('stations.mat');
 pos_vec = stations.pos_vec;
-RSSI_obj = matfile('RSSI-measurements.mat');
+RSSI_obj = matfile('RSSI-measurements-unknown-sigma.mat');
 Y = RSSI_obj.Y;
-%%
-if generated_data
-    [X_true, Y] = generate_data();
-end
+
 %% Generate X_0,w_0
 zeta_matrices = repmat(num2cell(diag(ones(6,1)*zeta^2),[1 2]),1,N);
 
@@ -72,11 +68,11 @@ weights(:,1) = cellfun(@mvnpdf,num2cell(repmat(Y(:,1),1,N),1), num2cell(mu,1) , 
 mw = max(weights(:,1));
 weights(:,1) =weights(:,1)/mw;
 %%
-driver_hist = zeros(5,m);
+driver_hist = zeros(N,m);
 driver = randsample(5,N, true);  %Z0 index
+driver_hist(:,1) = driver;
 driver_plot = zeros(m,1);
 driver_plot(1) = mode(driver);
-[temp1, temp2, driver_hist(:,1)]= groupcounts(driver);
 
 idx = 1;
 count = 0;
@@ -100,7 +96,8 @@ for time=2:m
         mw = max(weights(:,time));
         weights(:,time) =weights(:,time)/mw;
         driver_plot(time) =mode(driver);
-        [temp1, temp2, driver_hist(:,time)]= groupcounts(driver');        
+        
+        
         
     else
         W = psi_w*randn(2,N)*sigma; %Wn+1 N times
@@ -115,81 +112,28 @@ for time=2:m
         mw = max(weights(:,time));
         weights(:,time) =weights(:,time)/mw;
         
+        %driver_hist(:,time) = driver;
         driver_plot(time) =mode(driver);
-        [temp1, temp2, driver_hist(:,time)]= groupcounts(driver');        
     end
     
 
     
     
-    if time == eff_vec(idx)
-        big_omega = sum(weights(:,time));
-
-        CV(idx) = sqrt(N)*norm(weights(:,time)./big_omega - 1/N);
-        %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
-        ess(idx) = N/(1+CV(idx)^2);
-        
-        idx = idx +1;
-    end
+%     if time == eff_vec(idx)
+%         big_omega = sum(weights(:,time));
+% 
+%         CV(idx) = sqrt(N)*norm(weights(:,time)./big_omega - 1/N);
+%         %sqrt(N)*sqrt(sum((weights(:,time)./big_omega - 1/N).^2));
+%         ess(idx) = N/(1+CV(idx)^2);
+%         
+%         idx = idx +1;
+%     end
     
     if count >= countrate
-        disp(['Time = ' num2str(time) ' out of ' num2str(m)]);
+        disp(['Time= ' num2str(time)]);
         count = 0;
     else
         count = count+1;
     end
 end
-
-tau_1 = zeros(1,m);
-tau_2 = zeros(1,m);
-
-for time = 1:m
-    big_omega = sum(weights(:,time));
-   
-    tau_1(time) = sum(weights(:,time).*X(1,:,time)')/big_omega; 
-    tau_2(time) = sum(weights(:,time).*X(4,:,time)')/big_omega;
-end
-
-%% Create semilog histograms
-count = 1;
-if plot_histograms
-for i =[1 10 50 100 400]
-    figure(count)
-    count = count + 1;
-    [~,edges] = histcounts(log10(weights(:,i)));
-    histogram(weights(:,i), 10.^edges)
-    set(gca, 'xscale', 'log')
-    title(['Time =' num2str(i)])
-end
-end
-%% PLOT average path
-figure(count+1)
-hold on
-plot(tau_1,tau_2)
-plot(pos_vec(1,:),pos_vec(2,:),'*')
-title('Estimated path')
-%%
-if generated_data
-    plot(X_true(1,:), X_true(4,:))
-end
-legend('Approx','Stations', 'True');
-
-hold off
-
-max_driver = zeros(1,m);
-for time = 1:m
-    max_driver(time) = max(driver_hist(:,time));
-end
-%plot(max_driver)
-%driver_hist
-
-%%
-prob_comm = zeros(1,m);
-for time = 1:m
-    [val, I]= max(comm(:,time));
-    prob_comm(time) = val;
-end
-figure(count +3)
-plot(prob_comm)
-title('Most probable driving command')
 end
