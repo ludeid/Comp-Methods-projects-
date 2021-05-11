@@ -37,8 +37,9 @@ for time = 2:m
             R = rho*(t(i+1,part,time-1) -t(i-1,part,time-1));
             cand_vec(i) =t(i,part,time-1) + 2*R*rand() -R;
         end
-        alpha = min(1,f(cand_vec)/f(t(:,part,time)));
-        if rand()<=alpha && alpha ~=0
+        temp = f(cand_vec);
+        alpha = min(1,temp/f(t(:,part,time)));
+        if rand()<=alpha && temp ~= 0 
             t(:,part,time) = cand_vec;
         else
             t(:,part,time) = t(:,part,time-1);

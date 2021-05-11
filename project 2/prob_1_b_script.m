@@ -3,7 +3,7 @@ clear all
 N = 1;
 m = 10^5;
 d =4;
-rho = 0.1;
+rho = 0.01;
 
 varTheta = 5;
 t_1 = 1851;
@@ -38,12 +38,12 @@ for time = 2:m
             cand_vec(i) =t(i,part,time-1) + 2*R*rand() -R;
         end
         alpha = min(1,f(cand_vec)/f(t(:,part,time)));
-        if rand()<=alpha && alpha ~= 0  
-            t(:,part,time) = cand_vec*1;
+        if rand()<=alpha && f(cand_vec) ~= 0  
+            t(:,part,time) = cand_vec;
             %disp(['A' num2str(alpha)])
         else
             t(:,part,time) = t(:,part,time-1);
-            disp('B')
+            %disp('B')
         end
     end
 end

@@ -1,6 +1,6 @@
 % varTheta
 var_points = 10;
-varT_vec = linspace(0.2,10,var_points);
+varT_vec = linspace(0.0002,1000,var_points);
 % rho
 rho_points = 10;
 rho_vec = 0.01;
@@ -52,21 +52,22 @@ end
 for i = 1:d
     figure(i)
     hold on
-    histogram(l(round(var_points/10),i,:))
-    histogram(l(round(var_points/2),i,:))
-    histogram(l(var_points,i,:))
-    xlim([0 2.5*10^2]);
-    legend(num2str(varT_vec(round(var_points/10))),num2str(varT_vec(round(var_points/2))),num2str(varT_vec(var_points)))
+    histogram(l(15,i,:))
+    histogram(l(50,i,:))
+    histogram(l(99,i,:))
+%    xlim([0 40]);
+    legend('15','50','99')
     hold off
 end
-
+figure(6)
+histogram(l(5,1,:))
 
 figure(5)
 if d == 2
     hold on
-    histogram(breakPoint(round(var_points/10),:))
-    histogram(breakPoint(round(var_points/2),:))
-    histogram(breakPoint(var_points,:))
+    histogram(breakPoint(10,:))
+    histogram(breakPoint(50,:))
+    histogram(breakPoint(100,:))
     hold off
-    legend(num2str(varT_vec(round(var_points/10))),num2str(varT_vec(round(var_points/2))),num2str(varT_vec(var_points)))
+    legend('10','50','100')
 end
