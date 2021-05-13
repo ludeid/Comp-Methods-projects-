@@ -1,22 +1,24 @@
 % varTheta
 var_points = 10;
-varT_vec = linspace(0.0002,1000,var_points);
+varT_vec = linspace(0.2,10,var_points);
 % rho
 rho_points = 10;
-rho_vec = 0.01;
+rho_vec = 0.001;
 rho_vec = linspace(0.00001,1000,rho_points);
 
 N = 1;
 m = 10^3;
 d = 4;
 
+tau_obj = readtable('coal-mine.csv');
+tau = table2array(tau_obj);
 %% investigate both
 data = zeros(d+1,length(varT_vec)*length(rho_vec)); 
 
 idx = 1;
 for varTheta= varT_vec
     for rho = rho_vec
-        [t, lambda, theta] = prob_1_b(N,m,rho, d, varTheta);
+        [t, lambda, theta] = prob_1_b(N,m,rho, d, varTheta,tau);
         data(:,idx) = t(:,1,m);
         idx = idx +1;
 %         if idx == 13
@@ -30,14 +32,14 @@ end
 burnIn = 10^2;
 d = 2;
 m = 10^5;
-rho = 0.01;
+rho = 0.001;
 N = 1;
 
 l = zeros(length(varT_vec),d,m-burnIn+1);
 breakPoint = zeros(length(varT_vec),m-burnIn+1);
 idx = 1;
 for varTheta= varT_vec
-    [t, lambda, theta] = prob_1_b(N,m,rho, d, varTheta);
+    [t, lambda, theta] = prob_1_b(N,m,rho, d, varTheta,tau);
     for i = 1:d
         l(idx, i, :) = lambda(i,1,burnIn:m);
     end
@@ -52,22 +54,21 @@ end
 for i = 1:d
     figure(i)
     hold on
-    histogram(l(15,i,:))
-    histogram(l(50,i,:))
-    histogram(l(99,i,:))
-%    xlim([0 40]);
-    legend('15','50','99')
+    histogram(l(round(var_points/10),i,:))
+    histogram(l(round(var_points/2),i,:))
+    histogram(l(var_points,i,:))
+    %xlim([0 2.5*10^2]);
+    legend(['varTheta = ' num2str(varT_vec(round(var_points/10)))],['varTheta = ' num2str(varT_vec(round(var_points/2)))],['varTheta = ' num2str(varT_vec(var_points))])
     hold off
 end
-figure(6)
-histogram(l(5,1,:))
+
 
 figure(5)
 if d == 2
     hold on
-    histogram(breakPoint(10,:))
-    histogram(breakPoint(50,:))
-    histogram(breakPoint(100,:))
+    histogram(breakPoint(round(var_points/10),:),30)
+    histogram(breakPoint(round(var_points/2),:),30)
+    histogram(breakPoint(var_points,:),30)
     hold off
-    legend('10','50','100')
+    legend(['varTheta = ' num2str(varT_vec(round(var_points/10)))],['varTheta = ' num2str(varT_vec(round(var_points/2)))],['varTheta = ' num2str(varT_vec(var_points))])
 end
