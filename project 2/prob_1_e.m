@@ -6,8 +6,8 @@ tau_obj = readtable('coal-mine.csv');
 tau = table2array(tau_obj);
 
 rho_points = 3;
-rho_vec = linspace(0.1,10,rho_points);
-
+rho_vec = linspace(0.01,0.15,rho_points);
+rho_vec = [0.01 0.1 5];
 burnIn = 10^2;
 d = 2;
 m = 10^5;
@@ -74,16 +74,22 @@ plot(breakPoint(rho_points,:))
 legend(['rho = ' num2str(rho_vec(rho_points))])
 
 figure(10)
-[r,lags]= xcorr(breakPoint(1,:));
-plot(lags, r)
-xlim([0 10100])
-legend(['rho = ' num2str(rho_vec(1))])
+autocorr(breakPoint(1,:))
 figure(11)
-[r,lags]= xcorr(breakPoint(1,:));
-plot(lags, r)
-xlim([0 10100])
-breakPoint(round(rho_points/2),:))
-legend(['rho = ' num2str(rho_vec(round(rho_points/2)))])
+autocorr(breakPoint(2,:))
 figure(12)
-autocorr(breakPoint(rho_points,:))
-legend(['rho = ' num2str(rho_vec(rho_points))])
+autocorr(breakPoint(3,:))
+% figure(10)
+% [r,lags]= autocorr(breakPoint(1,:));
+% plot(lags, r)
+% xlim([0 10100])
+% legend(['rho = ' num2str(rho_vec(1))])
+% figure(11)
+% [r,lags]= xcorr(breakPoint(1,:));
+% plot(lags, r)
+% xlim([0 10100])
+% breakPoint(round(rho_points/2),:))
+% legend(['rho = ' num2str(rho_vec(round(rho_points/2)))])
+% figure(12)
+% autocorr(breakPoint(rho_points,:))
+% legend(['rho = ' num2str(rho_vec(rho_points))])
