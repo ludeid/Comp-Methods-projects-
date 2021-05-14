@@ -33,7 +33,7 @@ D = 0;
 %points or specified zeta_vec. If zeta_vec is passed as an empty array then
 %D-mesh will be used.
 
-zeta_vec = [2.25 2.3 2.35 2.4 2.45 2.5];
+zeta_vec = [2.2632     2.3158     2.3684    2.4211    2.4737   2,];
 
 %or
 
