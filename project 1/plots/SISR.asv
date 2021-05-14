@@ -54,6 +54,7 @@ driver_hist = zeros(N,m);
 driver = randsample(5,N, true);
 driver_hist(:,1) = driver;
 
+
 for time=2:m
     for part=1:N
         driver(part) = randsample(5,1,true,P(:,driver(part)));

@@ -38,7 +38,7 @@ Z = [
 
 %% 1.0: Trajectory
 X = randn(6,1).*sqrt([500;5;5;200;5;5]); %X0
-driver = round(rand()*4)+1;  %Z0 index
+driver = randsample(5,1);  %Z0 index
 
 X_hist = zeros(2, m);
 
