@@ -209,19 +209,11 @@ end
 
 mp_comm = zeros(m,1);
 for time = 1:m
-    comm_vec = zeros(5,1);
+    comm_vec = zeros(5,1)
     for part = 1:N
-        curr_dc = driver_hist2(part,time);
-        comm_vec(curr_dc) = comm_vec(curr_dc) + weights(part,time);
     end
-    [M,I] = max(comm_vec);
-    mp_comm(time) = I;
+    mp_comm(time) = 
 end
 
-plot(mp_comm,'*')
-[GC,GR] = groupcounts(mp_comm)
-title(['Count for Stat, East, Norh, South, West = '  num2str(GC')])
-yticks([1 2 3 4 5])
-yticklabels({'Stationary','East','North', 'South', 'West'})
-xlabel('Time')
+title('Most probable driving command')
 end
