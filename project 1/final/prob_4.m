@@ -174,6 +174,7 @@ hold on
 plot(tau_1,tau_2)
 plot(pos_vec(1,:),pos_vec(2,:),'*')
 title('Estimated path')
+hold off
 %%
 if generated_data
     plot(X_true(1,:), X_true(4,:))
@@ -217,7 +218,7 @@ for time = 1:m
     [M,I] = max(comm_vec);
     mp_comm(time) = I;
 end
-
+figure(count+7)
 plot(mp_comm,'*')
 [GC,GR] = groupcounts(mp_comm);
 title(['Count for Stat, East, Norh, South, West = '  num2str(GC')])
