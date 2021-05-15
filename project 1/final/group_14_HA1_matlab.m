@@ -9,7 +9,7 @@ prob_1(m)  %Simulating trajectory with m timesteps
 
 
 %% Problem 3
-N = 10^4; %number of particles
+N = 10^2; %number of particles
 generated_data = false; %true if one want to check correctedness of algorithm against data personally generated 
 hist_vec = [1 5 100 400]; %times to show (semilog-)histograms of weights
 
@@ -18,7 +18,7 @@ hist_vec = [1 5 100 400]; %times to show (semilog-)histograms of weights
 
 
 %% Problem 4
-N = 10^4; %number of particles
+N = 10^2; %number of particles
 plot_histograms = true; %plot histograms for (already) selected timepoints
 generated_data = false; %same as above
 

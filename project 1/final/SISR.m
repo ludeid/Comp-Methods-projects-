@@ -85,6 +85,7 @@ disp('Particles')
 for time = 2:m
     indices = randsample(N,N,true,weights(:,time-1));
     X(:,:,time-1) = X(:,indices,time-1);
+    driver = driver(indices);
     
     X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver_hist(:,time)) + psi_w*W(:,:,time);
     

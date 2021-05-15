@@ -90,6 +90,7 @@ for time=2:m
         %resample
         indices = randsample(N,N,true,weights(:,time-1));
         X(:,:,time-1) = X(:,indices,time-1);
+        driver = driver(indices);
         
         %draw as usual but without mult. weights
         W = psi_w*randn(2,N)*sigma; %Wn+1 N times
