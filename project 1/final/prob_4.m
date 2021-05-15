@@ -219,7 +219,7 @@ for time = 1:m
 end
 
 plot(mp_comm,'*')
-[GC,GR] = groupcounts(mp_comm)
+[GC,GR] = groupcounts(mp_comm);
 title(['Count for Stat, East, Norh, South, West = '  num2str(GC')])
 yticks([1 2 3 4 5])
 yticklabels({'Stationary','East','North', 'South', 'West'})
