@@ -84,7 +84,7 @@ invZ = inv(zeta^2*eye(6));
 disp('Particles')
 for time = 2:m
     indices = randsample(N,N,true,weights(:,time-1));
-    X(:,:,:) = X(:,indices,:);
+    X(:,:,time-1) = X(:,indices,time-1);
     
     X(:,:,time) = phi*X(:,:,time-1) + psi_z*Z(:,driver_hist(:,time)) + psi_w*W(:,:,time);
     

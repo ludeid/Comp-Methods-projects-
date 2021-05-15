@@ -89,7 +89,7 @@ for time=2:m
     if mod(time, resamplerate) == 0 
         %resample
         indices = randsample(N,N,true,weights(:,time-1));
-        X(:,:,:) = X(:,indices,:);
+        X(:,:,time-1) = X(:,indices,time-1);
         
         %draw as usual but without mult. weights
         W = psi_w*randn(2,N)*sigma; %Wn+1 N times
