@@ -19,6 +19,6 @@ for time = 2:N
     
     theta(time) = sum(f_vec)/n;
 end
-%%
+
 plot(theta)
 legend(['theta = ' num2str(theta(end))]) 
